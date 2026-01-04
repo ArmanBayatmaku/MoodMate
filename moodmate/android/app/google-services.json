@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "832136886358",
+    "project_id": "moodmate-69ddb",
+    "storage_bucket": "moodmate-69ddb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:832136886358:android:8d8c8385b0d646a05463f7",
+        "android_client_info": {
+          "package_name": "com.example.moodmate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "832136886358-v50qe0qlidfagf5kudea4sbgnmv681ji.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjIYFYxEidFuBA2pDTacsh5e22s5w9VwE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "832136886358-v50qe0qlidfagf5kudea4sbgnmv681ji.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "832136886358-ubq3u4u0lfs5eok57blgirbgmr0afr2u.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.moodmate"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

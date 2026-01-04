@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
+final _firebase = FirebaseAuth.instance;
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({
@@ -14,31 +19,56 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailCtrl = TextEditingController();
-  final _passwordCtrl = TextEditingController();
 
-  bool _isSubmitting = false;
   bool _obscure = true;
 
-  @override
-  void dispose() {
-    _emailCtrl.dispose();
-    _passwordCtrl.dispose();
-    super.dispose();
-  }
+  var _enteredEmail = '';
+  var _enteredPassword = '';
+  var _isAuthenticating = false;
 
-  Future<void> _submit() async {
-    final ok = _formKey.currentState?.validate() ?? false;
-    if (!ok) return;
+  void _submit() async {
+    final isValid = _formKey.currentState!.validate();
 
-    FocusScope.of(context).unfocus();
+    if (!isValid) {
+      return;
+    }
 
-    setState(() => _isSubmitting = true);
+    _formKey.currentState!.save();
+
     try {
-      // TODO: Call your auth logic here
-      // e.g. await AuthService.signIn(_emailCtrl.text, _passwordCtrl.text);
-    } finally {
-      if (mounted) setState(() => _isSubmitting = false);
+      setState(() {
+        _isAuthenticating = true;
+      });
+      if (widget.isLogin) {
+        final userCredentials = await _firebase.signInWithEmailAndPassword(
+          email: _enteredEmail,
+          password: _enteredPassword,
+        );
+      } else {
+        final userCredentials = await _firebase.createUserWithEmailAndPassword(
+          email: _enteredEmail,
+          password: _enteredPassword,
+        );
+
+        //await FirebaseFirestore.instance
+        //    .collection('users')
+        //    .doc(userCredentials.user!.uid)
+        //    .set({
+        //      'email': _enteredEmail,
+        //    });
+      }
+    } on FirebaseAuthException catch (error) {
+      print(error);
+      if (error.code == 'email-already-in-use') {}
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message ?? 'Authentication failed.'),
+        ),
+      );
+      setState(() {
+        _isAuthenticating = false;
+      });
     }
   }
 
@@ -172,7 +202,6 @@ class _AuthScreenState extends State<AuthScreen> {
                                             const SizedBox(height: 12),
 
                                             TextFormField(
-                                              controller: _emailCtrl,
                                               keyboardType:
                                                   TextInputType.emailAddress,
                                               textInputAction:
@@ -207,26 +236,26 @@ class _AuthScreenState extends State<AuthScreen> {
                                                           ),
                                                     ),
                                               ),
-                                              validator: (v) {
-                                                final s = (v ?? "").trim();
-                                                if (s.isEmpty)
-                                                  return "Enter email";
-                                                if (!s.contains('@')) {
-                                                  return "Enter a valid email";
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.trim().isEmpty ||
+                                                    !value.contains('@')) {
+                                                  return 'Please enter a valid email address.';
                                                 }
                                                 return null;
+                                              },
+                                              onSaved: (value) {
+                                                _enteredEmail = value!;
                                               },
                                             ),
 
                                             const SizedBox(height: 12),
 
                                             TextFormField(
-                                              controller: _passwordCtrl,
                                               obscureText: _obscure,
                                               textInputAction:
                                                   TextInputAction.done,
-                                              onFieldSubmitted: (_) =>
-                                                  _submit(),
+                                              //onFieldSubmitted: (){},
                                               decoration: InputDecoration(
                                                 labelText: "Password",
                                                 labelStyle: TextStyle(
@@ -270,15 +299,15 @@ class _AuthScreenState extends State<AuthScreen> {
                                                   ),
                                                 ),
                                               ),
-                                              validator: (v) {
-                                                final s = (v ?? "");
-                                                if (s.isEmpty) {
-                                                  return "Enter password";
-                                                }
-                                                if (s.length < 6) {
-                                                  return "Min 6 characters";
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.trim().length < 6) {
+                                                  return 'Password must be at least 6 characters long.';
                                                 }
                                                 return null;
+                                              },
+                                              onSaved: (value) {
+                                                _enteredPassword = value!;
                                               },
                                             ),
 
@@ -287,9 +316,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                             SizedBox(
                                               height: 52,
                                               child: ElevatedButton(
-                                                onPressed: _isSubmitting
-                                                    ? null
-                                                    : _submit,
+                                                onPressed: _submit,
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor: primaryBlue,
                                                   foregroundColor: Colors.white,
@@ -305,7 +332,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                                     fontWeight: FontWeight.w600,
                                                   ),
                                                 ),
-                                                child: _isSubmitting
+                                                child: _isAuthenticating
                                                     ? const SizedBox(
                                                         height: 18,
                                                         width: 18,
@@ -326,41 +353,6 @@ class _AuthScreenState extends State<AuthScreen> {
                                       ),
                                     ),
                                   ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        widget.isLogin
-                                            ? 'Not on our app yet? '
-                                            : 'Already have an account?',
-                                        style: TextStyle(
-                                          color: textBlue.withOpacity(0.8),
-                                          fontSize: 12.5,
-                                        ),
-                                      ),
-                                      InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            //widget.isLogin = !widget.isLogin;
-                                          });
-                                        }, // keep empty
-                                        child: Text(
-                                          widget.isLogin
-                                              ? 'Create account'
-                                              : 'Log in',
-                                          style: TextStyle(
-                                            color: textBlue,
-                                            fontSize: 12.5,
-                                            fontWeight: FontWeight.w600,
-                                            decoration:
-                                                TextDecoration.underline,
-                                            decorationColor: textBlue,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-
                                   const Spacer(flex: 2),
                                   const SizedBox(height: 18),
                                 ],
