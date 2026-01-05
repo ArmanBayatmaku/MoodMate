@@ -54,7 +54,6 @@ class ChatMessages extends StatelessWidget {
             final timestamp = (chatMessage['createdAt'] as Timestamp?)
                 ?.toDate();
 
-            // AI messages won't store these fields; safely read them only if present.
             final String? userImage = chatMessage.containsKey('userImage')
                 ? chatMessage['userImage'] as String?
                 : null;
@@ -63,7 +62,7 @@ class ChatMessages extends StatelessWidget {
                 ? chatMessage['username'] as String?
                 : null;
 
-            // Optional: show "AI" in UI without storing it in Firestore.
+            // TODO add AI image
             if (currentMessageUserId == aiUserId) {
               username ??= 'AI';
             }

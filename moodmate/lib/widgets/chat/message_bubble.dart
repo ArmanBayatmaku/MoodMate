@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-// A MessageBubble for showing a single chat message on the ChatScreen.
 class MessageBubble extends StatelessWidget {
-  // Create a message bubble which is meant to be the first in the sequence.
   const MessageBubble.first({
     super.key,
     this.userImage,
@@ -12,7 +10,7 @@ class MessageBubble extends StatelessWidget {
     required this.timestamp,
   }) : isFirstInSequence = true;
 
-  // Create a message bubble that continues the sequence.
+  //TODO add user image.
   const MessageBubble.next({
     super.key,
     required this.message,
@@ -25,7 +23,6 @@ class MessageBubble extends StatelessWidget {
   final DateTime? timestamp;
   final bool isFirstInSequence;
 
-  // Optional now (AI won't have these fields)
   final String? userImage;
   final String? username;
 
