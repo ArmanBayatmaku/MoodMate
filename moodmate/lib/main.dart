@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:moodmate/screens/auth_method.dart';
+import 'package:moodmate/screens/auth/auth_method.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:moodmate/screens/home.dart';
+import 'package:moodmate/screens/home/home.dart';
 import 'package:moodmate/screens/tabs.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,6 +12,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(const App());
 }
 

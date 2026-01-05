@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moodmate/screens/auth.dart';
+import 'package:moodmate/screens/auth/auth.dart';
 
 class AuthMethodScreen extends StatefulWidget {
   const AuthMethodScreen({super.key});

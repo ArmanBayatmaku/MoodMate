@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:moodmate/screens/tabs.dart';
 
 final _firebase = FirebaseAuth.instance;
 
@@ -28,47 +29,42 @@ class _AuthScreenState extends State<AuthScreen> {
 
   void _submit() async {
     final isValid = _formKey.currentState!.validate();
-
-    if (!isValid) {
-      return;
-    }
+    if (!isValid) return;
 
     _formKey.currentState!.save();
 
+    if (_isAuthenticating) return; // prevents double taps
+    setState(() => _isAuthenticating = true);
+
     try {
-      setState(() {
-        _isAuthenticating = true;
-      });
       if (widget.isLogin) {
-        final userCredentials = await _firebase.signInWithEmailAndPassword(
+        await _firebase.signInWithEmailAndPassword(
           email: _enteredEmail,
           password: _enteredPassword,
         );
       } else {
-        final userCredentials = await _firebase.createUserWithEmailAndPassword(
+        await _firebase.createUserWithEmailAndPassword(
           email: _enteredEmail,
           password: _enteredPassword,
         );
-
-        //await FirebaseFirestore.instance
-        //    .collection('users')
-        //    .doc(userCredentials.user!.uid)
-        //    .set({
-        //      'email': _enteredEmail,
-        //    });
       }
+
+      if (!mounted) return;
+
+      // ✅ Go to home and REMOVE auth routes from stack
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const TabsScreen()),
+        (route) => false,
+      );
     } on FirebaseAuthException catch (error) {
-      print(error);
-      if (error.code == 'email-already-in-use') {}
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error.message ?? 'Authentication failed.'),
-        ),
+        SnackBar(content: Text(error.message ?? 'Authentication failed.')),
       );
-      setState(() {
-        _isAuthenticating = false;
-      });
+    } finally {
+      if (mounted) setState(() => _isAuthenticating = false);
     }
   }
 
