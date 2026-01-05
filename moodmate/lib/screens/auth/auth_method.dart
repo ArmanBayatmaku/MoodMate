@@ -168,7 +168,7 @@ class _AuthMethodScreenState extends State<AuthMethodScreen> {
                     height: 54,
                     width: double.infinity,
                     child: OutlinedButton(
-                      onPressed: () {}, // keep empty
+                      onPressed: () {},
                       style: OutlinedButton.styleFrom(
                         foregroundColor: textBlue,
                         backgroundColor: Colors.transparent,
@@ -205,7 +205,7 @@ class _AuthMethodScreenState extends State<AuthMethodScreen> {
                           setState(() {
                             _isLogin = !_isLogin;
                           });
-                        }, // keep empty
+                        },
                         child: Text(
                           _isLogin ? 'Create account' : 'Log in',
                           style: TextStyle(

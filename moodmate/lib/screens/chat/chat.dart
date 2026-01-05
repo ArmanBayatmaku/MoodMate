@@ -14,7 +14,6 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  // Page palette (matches the screenshot vibe)
   static const bg = Color(0xFFF6F1E9);
   static const appBarBg = Colors.white;
   static const textDark = Color(0xFF1F2A37);
@@ -38,7 +37,7 @@ class _ChatScreenState extends State<ChatScreen> {
         titleSpacing: 0,
         title: Row(
           children: [
-            // avatar / assistant icon (circle)
+            // TODO maybe add an AI imagE?
             Container(
               width: 36,
               height: 36,
@@ -49,7 +48,6 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Icon(Icons.auto_awesome, color: accent, size: 18),
             ),
             const SizedBox(width: 10),
-            // title + subtitle
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -87,7 +85,6 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
 
-      // Layout wrapper to match screenshot spacing
       body: SafeArea(
         child: Column(
           children: [
@@ -108,7 +105,6 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
 
-            // Composer area (wrapper only — NewMessage remains unchanged)
             Container(
               padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
               decoration: BoxDecoration(
@@ -127,8 +123,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   color: Colors.white.withOpacity(0.0),
                   borderRadius: BorderRadius.circular(18),
                 ),
-                // If your NewMessage already contains its own padding/background,
-                // this wrapper still gives you the “floating” spacing like the screenshot.
                 child: const NewMessage(),
               ),
             ),

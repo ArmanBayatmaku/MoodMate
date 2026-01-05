@@ -33,7 +33,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
     _formKey.currentState!.save();
 
-    if (_isAuthenticating) return; // prevents double taps
+    if (_isAuthenticating) return;
     setState(() => _isAuthenticating = true);
 
     try {
@@ -51,7 +51,6 @@ class _AuthScreenState extends State<AuthScreen> {
 
       if (!mounted) return;
 
-      // ✅ Go to home and REMOVE auth routes from stack
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const TabsScreen()),
         (route) => false,
@@ -76,7 +75,7 @@ class _AuthScreenState extends State<AuthScreen> {
     const borderBlue = Color(0xFF8FB0D6);
     const divider = Color(0xFFD9D0C6);
 
-    // Keyboard height (0 when closed)
+    // Keyboard heights so it doesnt cover the input fields
     final keyboard = MediaQuery.of(context).viewInsets.bottom;
 
     return Scaffold(

@@ -13,11 +13,12 @@ class TabsScreen extends StatefulWidget {
 
 class _TabsScreenState extends State<TabsScreen> {
   int _selectedPageIndex = 1;
-  int _lastPageIndex = 1; // ⬅️ remember previous tab
+  int _lastPageIndex = 1;
 
+  //back from chat page to previous page index
   void _onTabSelected(int index) {
     if (index != 2) {
-      _lastPageIndex = index; // ⬅️ only store non-chat tabs
+      _lastPageIndex = index;
     }
 
     setState(() {
@@ -49,7 +50,7 @@ class _TabsScreenState extends State<TabsScreen> {
     final pages = [
       const CalendarScreen(),
       const HomeScreen(),
-      ChatScreen(onBack: goBackFromChat), // ✅ now legal
+      ChatScreen(onBack: goBackFromChat),
       const SettingsScreen(),
     ];
 
@@ -59,7 +60,7 @@ class _TabsScreenState extends State<TabsScreen> {
         child: pages[_selectedPageIndex],
       ),
 
-      // ⬇️ HIDE bottom tab only on Chat screen
+      // hide botttom tab in chat
       bottomNavigationBar: isChat
           ? null
           : Container(

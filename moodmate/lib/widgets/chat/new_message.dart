@@ -35,15 +35,15 @@ class _NewMessageState extends State<NewMessage> {
 
     final user = FirebaseAuth.instance.currentUser!;
 
-    // 1) Save the user's message
+    //Save the user's message
     await FirebaseFirestore.instance.collection('chat').add({
       'text': enteredMessage,
       'createdAt': Timestamp.now(),
       'userId': user.uid,
     });
 
-    // 2) Create + save the AI message (NO username/userImage/real uid)
-    // Replace this with your real AI call.
+    // Create + save the AI message (NO username/userImage/real uid)
+    // Replace this TODO
     final aiReply = await _getAiReply(enteredMessage);
 
     await FirebaseFirestore.instance.collection('chat').add({
@@ -53,9 +53,9 @@ class _NewMessageState extends State<NewMessage> {
     });
   }
 
-  // Placeholder: swap this out for your actual AI integration
+  // Placeholder TODO
   Future<String> _getAiReply(String userText) async {
-    // TODO: call your AI service here
+    // TODO Add ai here
     return "I'm your AI companion. You said: $userText";
   }
 
