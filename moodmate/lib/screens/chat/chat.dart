@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:moodmate/widgets/chat/chat_messages.dart';
 import 'package:moodmate/widgets/chat/new_message.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:moodmate/screens/home/home.dart';
+import 'package:moodmate/screens/tabs.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key, required this.onBack});

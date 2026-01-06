@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:moodmate/screens/home/home.dart';
 import 'package:moodmate/screens/tabs.dart';
 import 'firebase_options.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:moodmate/screens/splash.dart';
 

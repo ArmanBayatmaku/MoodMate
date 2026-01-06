@@ -1,6 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:moodmate/widgets/chat/text_history.dart';
+
+import 'package:firebase_ai/firebase_ai.dart';
+import 'package:moodmate/widgets/chat/text_history.dart';
+
+final model = FirebaseAI.googleAI().generativeModel(model: 'gemini-2.5-flash');
 
 class NewMessage extends StatefulWidget {
   const NewMessage({super.key});
@@ -34,16 +40,12 @@ class _NewMessageState extends State<NewMessage> {
     _messageController.clear();
 
     final user = FirebaseAuth.instance.currentUser!;
-
-    //Save the user's message
     await FirebaseFirestore.instance.collection('chat').add({
       'text': enteredMessage,
       'createdAt': Timestamp.now(),
       'userId': user.uid,
     });
 
-    // Create + save the AI message (NO username/userImage/real uid)
-    // Replace this TODO
     final aiReply = await _getAiReply(enteredMessage);
 
     await FirebaseFirestore.instance.collection('chat').add({
@@ -53,10 +55,36 @@ class _NewMessageState extends State<NewMessage> {
     });
   }
 
-  // Placeholder TODO
+  Future<String> _textHistory() async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+
+    final textBlock = await buildChatHistoryTextBlock(
+      db: FirebaseFirestore.instance,
+      uid: uid,
+    );
+
+    return textBlock;
+  }
+
+  Future<String> _aiAnswer() async {
+    final history = await _textHistory();
+    final prompt = [
+      Content.text(
+        'You are a chatbot that is built to act as a mood tracker/diary + reminder for elderly. your message history with this user is ${history}. Keep the history in mind but focus on the last message the most.',
+      ),
+    ];
+
+    final response = await model.generateContent(prompt);
+    final answer = response.text;
+
+    print('IM HEREEEEEEEEEEEEE ${answer}');
+
+    return answer ?? "Error. Please try again later.";
+  }
+
   Future<String> _getAiReply(String userText) async {
-    // TODO Add ai here
-    return "I'm your AI companion. You said: $userText";
+    final answer = await _aiAnswer();
+    return answer;
   }
 
   @override

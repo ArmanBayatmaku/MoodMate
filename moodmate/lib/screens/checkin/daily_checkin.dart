@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moodmate/screens/checkin/results.dart';
 import 'package:moodmate/widgets/home/daily_checkin_service.dart';
 
 class DailyCheckInScreen extends StatefulWidget {
@@ -11,6 +12,7 @@ class DailyCheckInScreen extends StatefulWidget {
 
 class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
   static const bg = Color(0xFFF6F1E9);
+
   static const textDark = Color(0xFF1F2A37);
   static const textBlue = Color(0xFF6F8FB0);
   static const primaryBlue = Color(0xFF7F9BB8);
@@ -220,6 +222,22 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
     return true;
   }
 
+  void _skipCurrentQuestion() {
+    setState(() {
+      if (_step == 0) {
+        _mind = '';
+        _step = 1;
+        return;
+      }
+      if (_step == 1) {
+        _energy = '';
+        _step = 2;
+        return;
+      }
+      _save();
+    });
+  }
+
   void _next() {
     if (!_canGoNext) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -249,6 +267,18 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
       thoughts: _thoughtsCtrl.text.trim(),
     );
 
+    if (!mounted) return;
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ResultsScreen(
+          day: widget.day,
+          mind: _mind ?? '',
+          energy: _energy ?? '',
+          thoughts: _thoughtsCtrl.text.trim(),
+        ),
+      ),
+    );
     if (mounted) Navigator.pop(context, true);
   }
 
@@ -308,6 +338,24 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
                   const SizedBox(height: 14),
 
                   // Bottom controls
+                  // Skip line
+                  if (_step != 2)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: GestureDetector(
+                        onTap: _skipCurrentQuestion,
+                        child: Text(
+                          'Skip this question',
+                          style: TextStyle(
+                            color: textBlue.withOpacity(0.85),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ),
+
                   Row(
                     children: [
                       Expanded(
@@ -323,15 +371,13 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
                               borderRadius: BorderRadius.circular(14),
                             ),
                           ),
-                          child: Text(_step == 0 ? 'Skip' : 'Back'),
+                          child: Text(_step == 0 ? 'Cancel' : 'Back'),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: _step == 2
-                              ? _save
-                              : (_canGoNext ? _next : null),
+                          onPressed: _step == 2 ? _save : _next,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: primaryBlue.withOpacity(0.9),
                             foregroundColor: Colors.white,
