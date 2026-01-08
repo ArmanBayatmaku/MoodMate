@@ -7,6 +7,12 @@ import 'firebase_options.dart';
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:moodmate/screens/splash.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
+
+import 'package:provider/provider.dart';
+import 'package:moodmate/controllers/theme_controller.dart';
+import 'package:moodmate/models/colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +20,13 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const App());
+  final controller = await ThemeController.load();
+  runApp(
+    ChangeNotifierProvider.value(
+      value: controller,
+      child: const App(),
+    ),
+  );
 }
 
 class App extends StatelessWidget {
@@ -22,12 +34,19 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.watch<ThemeController>().colors;
     return MaterialApp(
-      title: 'FlutterChat',
-      theme: ThemeData().copyWith(
-        useMaterial3: true,
+      title: 'MoodMate',
+      theme: ThemeData(
+        scaffoldBackgroundColor: colors.bg,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 63, 17, 177),
+          seedColor: colors.accentBlue,
+          brightness: Brightness.light,
+        ),
+        dividerColor: colors.divider,
+        textTheme: Theme.of(context).textTheme.apply(
+          bodyColor: colors.textDark,
+          displayColor: colors.textDark,
         ),
       ),
       home: StreamBuilder(

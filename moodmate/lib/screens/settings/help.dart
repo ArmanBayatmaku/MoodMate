@@ -54,7 +54,7 @@ class HelpScreen extends StatelessWidget {
                         _Question(
                           question: 'How do I change my mood entry?',
                           answer:
-                              'Unfortunately, not on this version of the app :(',
+                              'You can view and edit both the mood and checkin entries through the profile page in the settings.',
                         ),
                         SizedBox(height: 14),
 

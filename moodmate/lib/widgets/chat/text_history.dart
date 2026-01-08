@@ -34,7 +34,6 @@ Future<String> buildChatHistoryTextBlock({
         ? 'artificialIntelligence'
         : 'User';
 
-    // Keep the block readable even if messages contain newlines
     final cleaned = rawText.trim().replaceAll('\r\n', '\n');
 
     buffer.writeln('$role: $cleaned');

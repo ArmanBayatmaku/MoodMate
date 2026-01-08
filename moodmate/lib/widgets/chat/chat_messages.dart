@@ -10,24 +10,31 @@ class ChatMessages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authenticatedUser = FirebaseAuth.instance.currentUser!;
+    final authenticatedUser = FirebaseAuth.instance.currentUser;
 
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('chat')
-          .orderBy('createdAt', descending: true)
-          .snapshots(),
+    if (authenticatedUser == null) {
+      return const Center(child: Text('Not logged in.'));
+    }
+    final chatStream = FirebaseFirestore.instance
+        .collection('users')
+        .doc(authenticatedUser.uid)
+        .collection('chatMessages')
+        .orderBy('createdAt', descending: true)
+        .snapshots();
+
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: chatStream,
       builder: (ctx, chatSnapshots) {
         if (chatSnapshots.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (!chatSnapshots.hasData || chatSnapshots.data!.docs.isEmpty) {
-          return const Center(child: Text('No messages found.'));
-        }
-
         if (chatSnapshots.hasError) {
           return const Center(child: Text('Something went wrong...'));
+        }
+
+        if (!chatSnapshots.hasData || chatSnapshots.data!.docs.isEmpty) {
+          return const Center(child: Text('No messages found.'));
         }
 
         final loadedMessages = chatSnapshots.data!.docs;
@@ -42,15 +49,14 @@ class ChatMessages extends StatelessWidget {
                 ? loadedMessages[index + 1].data()
                 : null;
 
-            final currentMessageUserId =
-                (chatMessage['userId'] ?? '') as String;
-            final nextMessageUserId = nextChatMessage != null
-                ? (nextChatMessage['userId'] ?? '') as String
+            final currentSenderId = (chatMessage['senderId'] ?? '').toString();
+            final nextSenderId = nextChatMessage != null
+                ? (nextChatMessage['senderId'] ?? '').toString()
                 : null;
 
-            final nextUserIsSame = nextMessageUserId == currentMessageUserId;
+            final nextUserIsSame = nextSenderId == currentSenderId;
 
-            final isMe = authenticatedUser.uid == currentMessageUserId;
+            final isMe = authenticatedUser.uid == currentSenderId;
             final timestamp = (chatMessage['createdAt'] as Timestamp?)
                 ?.toDate();
 
@@ -62,14 +68,15 @@ class ChatMessages extends StatelessWidget {
                 ? chatMessage['username'] as String?
                 : null;
 
-            // TODO add AI image
-            if (currentMessageUserId == aiUserId) {
+            if (currentSenderId == aiUserId) {
               username ??= 'AI';
             }
 
+            final messageText = (chatMessage['text'] ?? '').toString();
+
             if (nextUserIsSame) {
               return MessageBubble.next(
-                message: (chatMessage['text'] ?? '') as String,
+                message: messageText,
                 isMe: isMe,
                 timestamp: timestamp,
               );
@@ -77,7 +84,7 @@ class ChatMessages extends StatelessWidget {
               return MessageBubble.first(
                 userImage: userImage,
                 username: username,
-                message: (chatMessage['text'] ?? '') as String,
+                message: messageText,
                 isMe: isMe,
                 timestamp: timestamp,
               );

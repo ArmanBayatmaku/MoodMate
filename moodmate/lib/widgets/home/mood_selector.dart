@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moodmate/models/home/mood.dart';
-import 'package:moodmate/widgets/home/mood_service.dart';
+import 'package:moodmate/services/mood_service.dart';
 
 class MoodSelector extends StatelessWidget {
   const MoodSelector({

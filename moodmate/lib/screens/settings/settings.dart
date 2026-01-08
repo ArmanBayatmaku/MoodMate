@@ -1,26 +1,29 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:moodmate/screens/auth/auth_method.dart';
 import 'package:moodmate/screens/settings/about.dart';
+import 'package:moodmate/screens/settings/color_theme.dart';
 import 'package:moodmate/screens/settings/help.dart';
-
-final user = FirebaseAuth.instance.currentUser;
-final email = user?.email;
+import 'package:moodmate/screens/settings/profile.dart';
+import 'package:speech_to_text/speech_to_text.dart';
+import 'package:moodmate/controllers/theme_controller.dart';
+import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
-  static const bg = Color(0xFFF6F1E9);
-  static const card = Colors.white;
-  static const textDark = Color(0xFF2E3B4E);
-  static const textMuted = Color(0xFF8A96A8);
-  static const accentBlue = Color(0xFF7F9BB8);
-  static const divider = Color(0xFFE3DED6);
-
   @override
   Widget build(BuildContext context) {
+    final colors = context.watch<ThemeController>().colors;
+
+    final user = FirebaseAuth.instance.currentUser;
+    final email = user?.email;
+
     return Scaffold(
-      backgroundColor: bg,
+      backgroundColor: colors.bg,
       body: SafeArea(
+        top: false,
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 420),
@@ -29,12 +32,12 @@ class SettingsScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const SizedBox(height: 6),
-                  const Text(
+                  Text(
                     'Settings',
                     style: TextStyle(
                       fontSize: 42,
                       fontWeight: FontWeight.w900,
-                      color: textDark,
+                      color: colors.textDark,
                       height: 1.0,
                     ),
                     textAlign: TextAlign.center,
@@ -45,7 +48,7 @@ class SettingsScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      color: textMuted,
+                      color: colors.textMuted,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -55,11 +58,15 @@ class SettingsScreen extends StatelessWidget {
                   _CardShell(
                     child: _SettingsRow(
                       icon: Icons.person_outline,
-                      iconColor: accentBlue,
-                      title: '${email}',
+                      iconColor: colors.accentBlue,
+                      title: '${email ?? ''}',
                       subtitle: 'View Profile',
                       onTap: () {
-                        // TODO: navigate to profile
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (ctx) => ProfileScreen(),
+                          ),
+                        );
                       },
                     ),
                   ),
@@ -72,34 +79,38 @@ class SettingsScreen extends StatelessWidget {
                       children: [
                         _SettingsRow(
                           icon: Icons.text_fields,
-                          iconColor: accentBlue,
+                          iconColor: colors.accentBlue,
                           title: 'Text Size',
                           onTap: () {
                             // TODO
                           },
                         ),
-                        _DividerLine(),
+                        const _DividerLine(),
                         _SettingsRow(
                           icon: Icons.palette_outlined,
-                          iconColor: accentBlue,
+                          iconColor: colors.accentBlue,
                           title: 'Color Themes',
                           onTap: () {
-                            // TODO
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (ctx) => const ThemePickerScreen(),
+                              ),
+                            );
                           },
                         ),
-                        _DividerLine(),
+                        const _DividerLine(),
                         _SettingsRow(
                           icon: Icons.notifications_none,
-                          iconColor: accentBlue,
+                          iconColor: colors.accentBlue,
                           title: 'Notifications',
                           onTap: () {
                             // TODO
                           },
                         ),
-                        _DividerLine(),
+                        const _DividerLine(),
                         _SettingsRow(
                           icon: Icons.help_outline,
-                          iconColor: accentBlue,
+                          iconColor: colors.accentBlue,
                           title: 'Help & Support',
                           onTap: () {
                             Navigator.of(context).push(
@@ -109,10 +120,10 @@ class SettingsScreen extends StatelessWidget {
                             );
                           },
                         ),
-                        _DividerLine(),
+                        const _DividerLine(),
                         _SettingsRow(
                           icon: Icons.info_outline,
-                          iconColor: accentBlue,
+                          iconColor: colors.accentBlue,
                           title: 'About',
                           onTap: () {
                             Navigator.of(context).push(
@@ -139,6 +150,13 @@ class SettingsScreen extends StatelessWidget {
                       showChevron: false,
                       onTap: () {
                         FirebaseAuth.instance.signOut();
+                        GoogleSignIn().signOut();
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (_) => const AuthMethodScreen(),
+                          ),
+                          (route) => false,
+                        );
                       },
                     ),
                   ),
@@ -150,7 +168,7 @@ class SettingsScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: textMuted.withOpacity(0.9),
+                      color: colors.textMuted.withOpacity(0.9),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -170,18 +188,17 @@ class _CardShell extends StatelessWidget {
   const _CardShell({required this.child});
   final Widget child;
 
-  static const card = Colors.white;
-  static const divider = Color(0xFFE3DED6);
-
   @override
   Widget build(BuildContext context) {
+    final colors = context.watch<ThemeController>().colors;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: card,
+        color: colors.card,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: divider),
+        border: Border.all(color: colors.divider),
         boxShadow: const [
           BoxShadow(
             color: Color(0x1A000000),
@@ -198,14 +215,14 @@ class _CardShell extends StatelessWidget {
 class _DividerLine extends StatelessWidget {
   const _DividerLine();
 
-  static const divider = Color(0xFFE3DED6);
-
   @override
   Widget build(BuildContext context) {
+    final colors = context.watch<ThemeController>().colors;
+
     return Container(
       height: 1,
       margin: const EdgeInsets.only(left: 68, right: 6),
-      color: divider.withOpacity(0.8),
+      color: colors.divider.withOpacity(0.8),
     );
   }
 }
@@ -232,14 +249,14 @@ class _SettingsRow extends StatelessWidget {
   final Color? titleColor;
   final bool showChevron;
 
-  static const textDark = Color(0xFF2E3B4E);
-  static const textMuted = Color(0xFF8A96A8);
   static const defaultIconBg = Color(0xFFF1F4F7);
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.watch<ThemeController>().colors;
+
     final resolvedIconBg = iconBg ?? defaultIconBg;
-    final resolvedIconColor = iconColor ?? const Color(0xFF7F9BB8);
+    final resolvedIconColor = iconColor ?? colors.accentBlue;
 
     return InkWell(
       borderRadius: BorderRadius.circular(18),
@@ -258,7 +275,6 @@ class _SettingsRow extends StatelessWidget {
               child: Icon(icon, color: resolvedIconColor, size: 26),
             ),
             const SizedBox(width: 14),
-
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -268,29 +284,28 @@ class _SettingsRow extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
-                      color: titleColor ?? textDark,
+                      color: titleColor ?? colors.textDark,
                     ),
                   ),
                   if (subtitle != null) ...[
                     const SizedBox(height: 4),
                     Text(
                       subtitle!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: textMuted,
+                        color: colors.textMuted,
                       ),
                     ),
                   ],
                 ],
               ),
             ),
-
             if (showChevron)
-              const Icon(
+              Icon(
                 Icons.chevron_right,
                 size: 30,
-                color: textMuted,
+                color: colors.textMuted,
               ),
           ],
         ),

@@ -26,8 +26,6 @@ class _RemindersScreenState extends State<CalendarScreen> {
 
   late DateTime _focusedDay;
   late DateTime _selectedDay;
-
-  /// Map of normalized day -> number of reminders
   Map<DateTime, int> _countsByDay = {};
 
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _monthSub;
@@ -85,7 +83,6 @@ class _RemindersScreenState extends State<CalendarScreen> {
         });
   }
 
-  // TableCalendar wants a list of events. length for marker dots.
   List<int> _eventLoader(DateTime day) {
     final count = _countsByDay[_normalize(day)] ?? 0;
     if (count <= 0) return const [];
@@ -349,22 +346,35 @@ class _RemindersScreenState extends State<CalendarScreen> {
                   calendarStyle: CalendarStyle(
                     isTodayHighlighted: false,
                     outsideDaysVisible: false,
+                    defaultDecoration: BoxDecoration(
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    weekendDecoration: BoxDecoration(
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    outsideDecoration: const BoxDecoration(
+                      shape: BoxShape.rectangle,
+                    ),
+                    todayDecoration: BoxDecoration(
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                     selectedDecoration: BoxDecoration(
                       color: bg,
                       border: Border.all(color: outline, width: 2),
                       borderRadius: BorderRadius.circular(14),
                     ),
+
                     selectedTextStyle: const TextStyle(
                       fontWeight: FontWeight.w700,
                       color: textDark,
                     ),
                     defaultTextStyle: const TextStyle(color: textDark),
                     weekendTextStyle: const TextStyle(color: textDark),
-
-                    //markersMaxCount: 3, // up to 3 dots
-                    //markersAlignment: Alignment.bottomCenter,
-                    //markerMargin: const EdgeInsets.symmetric(horizontal: 1.4),
                   ),
+
                   calendarBuilders: CalendarBuilders(
                     markerBuilder: (context, day, events) {
                       final count = events.length;

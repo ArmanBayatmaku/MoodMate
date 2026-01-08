@@ -32,13 +32,6 @@ class _TabsScreenState extends State<TabsScreen> {
     });
   }
 
-  //final List<Widget> _pages = [
-  //  CalendarScreen(),
-  //  HomeScreen(),
-  //  ChatScreen(onBack: goBackFromChat),
-  //  SettingsScreen(),
-  //];
-
   @override
   Widget build(BuildContext context) {
     const bg = Color(0xFFF6F1E9);

@@ -41,6 +41,17 @@ dependencies:
   table_calendar: ^3.2.0
   intl: ^0.20.0
   firebase_ai: ^3.6.1
+  flutter_riverpod: ^3.1.0
+  riverpod_annotation: ^4.0.0
+  google_gemini_ai: ^1.0.1
+  riverpod_generator: ^4.0.0+1
+  firebase_vertexai: ^2.2.0
+  speech_to_text: ^7.3.0
+  google_sign_in: ^6.3.0
+  firebase_ui_auth: ^3.0.1
+  firebase_ui_oauth_google: ^2.0.1
+  shared_preferences: ^2.5.4
+  provider: ^6.1.5+1
 
 dev_dependencies:
   flutter_test:
@@ -53,6 +64,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
 
+  build_runner: ^2.4.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

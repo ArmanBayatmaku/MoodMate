@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:moodmate/models/home/mood.dart';
-import 'package:moodmate/widgets/home/mood_service.dart';
+import 'package:moodmate/services/mood_service.dart';
 
 class ResultsScreen extends StatelessWidget {
   const ResultsScreen({

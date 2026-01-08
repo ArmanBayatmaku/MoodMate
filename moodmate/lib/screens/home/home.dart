@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:moodmate/widgets/home/mood_calendar.dart';
 import 'package:moodmate/widgets/home/mood_selector.dart';
 import 'package:moodmate/widgets/home/daily_checkin.dart';
-import 'package:moodmate/widgets/home/daily_checkin_service.dart';
+import 'package:moodmate/services/daily_checkin_service.dart';
 import 'package:moodmate/screens/checkin/daily_checkin.dart';
+import 'package:moodmate/controllers/theme_controller.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,7 +15,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const bg = Color(0xFFF6F1E9);
   DateTime _selectedDay = DateTime.now();
 
   DateTime _norm(DateTime d) => DateTime(d.year, d.month, d.day);
@@ -27,8 +28,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.watch<ThemeController>().colors;
+
     return Scaffold(
-      backgroundColor: bg,
+      backgroundColor: colors.bg,
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -38,12 +41,12 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 6),
-                  const Text(
+                  Text(
                     'Good evening, Friend',
                     style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF2E3B4E),
+                      color: colors.textDark,
                       height: 1.1,
                     ),
                     textAlign: TextAlign.center,
@@ -54,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: const Color(0xFF6F8FB0).withOpacity(0.9),
+                      color: colors.accentBlue.withOpacity(0.9),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -64,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: const Color(0xFF6F8FB0),
+                      color: colors.accentBlue,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -102,7 +105,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         DailyCheckInScreen(day: _selectedDay),
                                   ),
                                 );
-                            // no setState needed — Firestore stream updates automatically
                           },
                         );
                       },
@@ -124,13 +126,15 @@ class _CardShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.watch<ThemeController>().colors;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.75),
+        color: colors.card.withOpacity(0.75),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE7DED3)),
+        border: Border.all(color: colors.divider),
         boxShadow: const [
           BoxShadow(
             color: Color(0x14000000),

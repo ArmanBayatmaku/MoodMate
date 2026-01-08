@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moodmate/screens/checkin/results.dart';
-import 'package:moodmate/widgets/home/daily_checkin_service.dart';
+import 'package:moodmate/services/daily_checkin_service.dart';
 
 class DailyCheckInScreen extends StatefulWidget {
   const DailyCheckInScreen({super.key, required this.day});
@@ -42,6 +42,11 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
       builder: (ctx) {
         return StatefulBuilder(
           builder: (ctx, setDialogState) {
+            final viewInsets = MediaQuery.of(ctx).viewInsets.bottom;
+            final screenH = MediaQuery.of(ctx).size.height;
+
+            final maxDialogHeight = (screenH - viewInsets) * 0.85;
+
             return Dialog(
               backgroundColor: const Color(0xFFF6F1E9),
               insetPadding: const EdgeInsets.symmetric(
@@ -52,151 +57,155 @@ class _DailyCheckInScreenState extends State<DailyCheckInScreen> {
                 borderRadius: BorderRadius.circular(22),
               ),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 420),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Header
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(18, 18, 12, 14),
-                      child: Row(
-                        children: [
-                          const Expanded(
-                            child: Text(
-                              'Your Response',
+                constraints: BoxConstraints(
+                  maxWidth: 420,
+                  maxHeight: maxDialogHeight.clamp(260.0, screenH * 0.85),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Header
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(18, 18, 12, 14),
+                        child: Row(
+                          children: [
+                            const Expanded(
+                              child: Text(
+                                'Your Response',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF1F2A37),
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              borderRadius: BorderRadius.circular(999),
+                              onTap: () => Navigator.pop(ctx),
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.close,
+                                  size: 22,
+                                  color: Color(0xFF2E3B4E),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Divider
+                      Container(height: 1, color: const Color(0xFFE7DED3)),
+
+                      // Body
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Please type your own response:',
                               style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFF1F2A37),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF8A96A8),
                               ),
                             ),
-                          ),
-                          InkWell(
-                            borderRadius: BorderRadius.circular(999),
-                            onTap: () => Navigator.pop(ctx),
-                            child: const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Icon(
-                                Icons.close,
-                                size: 22,
-                                color: Color(0xFF2E3B4E),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                            const SizedBox(height: 14),
 
-                    // Divider
-                    Container(height: 1, color: const Color(0xFFE7DED3)),
-
-                    // Body
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Please type your own response:',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF8A96A8),
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-
-                          // Big input box
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.95),
-                              borderRadius: BorderRadius.circular(22),
-                              border: Border.all(
-                                color: const Color(0xFF8FB0D6),
-                                width: 3,
-                              ),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 12,
-                            ),
-                            child: TextField(
-                              controller: ctrl,
-                              autofocus: true,
-                              minLines: 4,
-                              maxLines: 6,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                hintText: 'Type here...',
-                                hintStyle: TextStyle(
-                                  color: Color(0xFF9AA6B2),
-                                  fontWeight: FontWeight.w600,
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.95),
+                                borderRadius: BorderRadius.circular(22),
+                                border: Border.all(
+                                  color: const Color(0xFF8FB0D6),
+                                  width: 3,
                                 ),
                               ),
-                              onChanged: (v) {
-                                final ok = v.trim().isNotEmpty;
-                                if (ok != canSubmit) {
-                                  setDialogState(() => canSubmit = ok);
-                                }
-                              },
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 12,
+                              ),
+                              child: TextField(
+                                controller: ctrl,
+                                autofocus: true,
+                                minLines: 4,
+                                maxLines: 6,
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: 'Type here...',
+                                  hintStyle: TextStyle(
+                                    color: Color(0xFF9AA6B2),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                onChanged: (v) {
+                                  final ok = v.trim().isNotEmpty;
+                                  if (ok != canSubmit) {
+                                    setDialogState(() => canSubmit = ok);
+                                  }
+                                },
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
 
-                    // Divider
-                    Container(height: 1, color: const Color(0xFFE7DED3)),
+                      // Divider
+                      Container(height: 1, color: const Color(0xFFE7DED3)),
 
-                    // Actions
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            width: double.infinity,
-                            height: 56,
-                            child: ElevatedButton(
-                              onPressed: canSubmit
-                                  ? () => Navigator.pop(ctx, ctrl.text.trim())
-                                  : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF7F9BB8),
-                                disabledBackgroundColor: const Color(
-                                  0xFF7F9BB8,
-                                ).withOpacity(0.45),
-                                foregroundColor: Colors.white,
-                                disabledForegroundColor: Colors.white,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(18),
+                      // Actions
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              height: 56,
+                              child: ElevatedButton(
+                                onPressed: canSubmit
+                                    ? () => Navigator.pop(ctx, ctrl.text.trim())
+                                    : null,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF7F9BB8),
+                                  disabledBackgroundColor: const Color(
+                                    0xFF7F9BB8,
+                                  ).withOpacity(0.45),
+                                  foregroundColor: Colors.white,
+                                  disabledForegroundColor: Colors.white,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Submit',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w800,
+                                  ),
                                 ),
                               ),
+                            ),
+                            const SizedBox(height: 14),
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
                               child: const Text(
-                                'Submit',
+                                'Cancel',
                                 style: TextStyle(
                                   fontSize: 18,
-                                  fontWeight: FontWeight.w800,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF7A8798),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 14),
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx),
-                            child: const Text(
-                              'Cancel',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF7A8798),
-                              ),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );

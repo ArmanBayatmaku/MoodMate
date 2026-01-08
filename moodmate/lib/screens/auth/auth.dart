@@ -75,7 +75,6 @@ class _AuthScreenState extends State<AuthScreen> {
     const borderBlue = Color(0xFF8FB0D6);
     const divider = Color(0xFFD9D0C6);
 
-    // Keyboard heights so it doesnt cover the input fields
     final keyboard = MediaQuery.of(context).viewInsets.bottom;
 
     return Scaffold(

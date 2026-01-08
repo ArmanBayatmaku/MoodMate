@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:moodmate/widgets/home/daily_checkin_service.dart';
+import 'package:moodmate/services/daily_checkin_service.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:moodmate/models/home/mood.dart';
-import 'package:moodmate/widgets/home/mood_service.dart';
+import 'package:moodmate/services/mood_service.dart';
 
 class MoodCalendar extends StatefulWidget {
   const MoodCalendar({
@@ -116,7 +116,6 @@ class _MoodCalendarState extends State<MoodCalendar> {
       ),
 
       calendarBuilders: CalendarBuilders(
-        // Chage date background based on the mood
         defaultBuilder: (context, day, focused) {
           final mood = _moodByDay[_norm(day)];
           final hasCheckIn = _checkinDays.contains(_norm(day));

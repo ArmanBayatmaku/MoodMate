@@ -1,5 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:moodmate/screens/auth/auth.dart';
+
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
+import 'package:moodmate/screens/tabs.dart';
 
 class AuthMethodScreen extends StatefulWidget {
   const AuthMethodScreen({super.key});
@@ -18,6 +24,41 @@ class _AuthMethodScreenState extends State<AuthMethodScreen> {
     const textBlue = Color(0xFF6F8FB0);
     const borderBlue = Color(0xFF8FB0D6);
     const divider = Color(0xFFD9D0C6);
+
+    Future<void> _signInWithGoogle() async {
+      try {
+        // 1. Trigger the Google Authentication flow
+        final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+        // If the user cancels the login, googleUser is null
+        if (googleUser == null) return;
+
+        // 2. Obtain the auth details from the request
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+
+        // 3. Create a new credential
+        final OAuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        // 4. Sign in to Firebase with the new credential
+        await FirebaseAuth.instance.signInWithCredential(credential);
+
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const TabsScreen()),
+          (route) => false,
+        );
+
+        // Optional: Navigate to your next screen if needed
+        // Navigator.of(context).pushReplacementNamed('/chat');
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Sign in failed: $e')),
+        );
+      }
+    }
 
     return Scaffold(
       backgroundColor: bg,
@@ -103,9 +144,9 @@ class _AuthMethodScreenState extends State<AuthMethodScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 24),
 
-                  // Continue with Google. TODO!!!!!
+                  /*// Continue with Google. TODO!!!!!
                   SizedBox(
                     height: 54,
                     width: double.infinity,
@@ -135,10 +176,42 @@ class _AuthMethodScreenState extends State<AuthMethodScreen> {
                         ),
                       ),
                     ),
+                  ),*/
+                  SizedBox(
+                    height: 54,
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      // Hook up the function here
+                      onPressed: _signInWithGoogle,
+                      icon: const Icon(
+                        Icons.g_mobiledata_rounded,
+                        size: 26,
+                        color:
+                            textBlue, // Ensure 'textBlue' is defined in your class
+                      ),
+                      label: const Text("Continue with Google"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white.withOpacity(0.96),
+                        foregroundColor: textBlue,
+                        elevation: 2,
+                        shadowColor: Colors.black12,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: const BorderSide(
+                            color: Colors.white,
+                            width: 1.2,
+                          ),
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ),
 
-                  const SizedBox(height: 16),
-
+                  const SizedBox(height: 156),
+                  /*
                   // Divider line"
                   Row(
                     children: [
@@ -185,7 +258,7 @@ class _AuthMethodScreenState extends State<AuthMethodScreen> {
                     ),
                   ),
 
-                  const Spacer(flex: 2),
+                  const Spacer(flex: 2),*/
 
                   // Swap to sign up
                   Row(
